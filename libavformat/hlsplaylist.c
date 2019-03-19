@@ -24,6 +24,7 @@
 #include <stdint.h>
 
 #include "libavutil/time_internal.h"
+#include "libavutil/avstring.h"
 
 #include "avformat.h"
 #include "hlsplaylist.h"
@@ -36,12 +37,13 @@ void ff_hls_write_playlist_version(AVIOContext *out, int version) {
 }
 
 void ff_hls_write_audio_rendition(AVIOContext *out, char *agroup,
-                                  char *filename, char *language, int name_id, int is_default) {
+                                  char *filename, char *language, int name_id, char *name, int is_default) {
     if (!out || !agroup || !filename)
         return;
 
     avio_printf(out, "#EXT-X-MEDIA:TYPE=AUDIO,GROUP-ID=\"group_%s\"", agroup);
-    avio_printf(out, ",NAME=\"audio_%d\",DEFAULT=%s,", name_id, is_default ? "YES" : "NO");
+    avio_printf(out, ",NAME=\"%s\",DEFAULT=%s,", name ? name : av_asprintf("audio_%d", name_id),
+                is_default ? "YES" : "NO");
     if (language) {
         avio_printf(out, "LANGUAGE=\"%s\",", language);
     }
