@@ -110,21 +110,27 @@ int ff_hls_write_file_entry(AVIOContext *out, int insert_discont,
                              double duration, int round_duration,
                              int64_t size, int64_t pos, //Used only if HLS_SINGLE_FILE flag is set
                              char *baseurl, //Ignored if NULL
-                             char *filename, double *prog_date_time) {
+                             char *filename, double *prog_date_time,
+                             int prefetch) {
     if (!out || !filename)
         return AVERROR(EINVAL);
 
     if (insert_discont) {
-        avio_printf(out, "#EXT-X-DISCONTINUITY\n");
+        if (prefetch)
+            avio_printf(out, "#EXT-X-PREFETCH-DISCONTINUITY\n");
+        else
+            avio_printf(out, "#EXT-X-DISCONTINUITY\n");
     }
-    if (round_duration)
-        avio_printf(out, "#EXTINF:%ld,\n",  lrint(duration));
-    else
-        avio_printf(out, "#EXTINF:%f,\n", duration);
-    if (byterange_mode)
-        avio_printf(out, "#EXT-X-BYTERANGE:%"PRId64"@%"PRId64"\n", size, pos);
+    if (!prefetch) {
+        if (round_duration)
+            avio_printf(out, "#EXTINF:%ld,\n",  lrint(duration));
+        else
+            avio_printf(out, "#EXTINF:%f,\n", duration);
+        if (byterange_mode)
+            avio_printf(out, "#EXT-X-BYTERANGE:%"PRId64"@%"PRId64"\n", size, pos);
+    }
 
-    if (prog_date_time) {
+    if (!prefetch && prog_date_time) {
         time_t tt, wrongsecs;
         int milli;
         struct tm *tm, tmpbuf;
@@ -151,6 +157,8 @@ int ff_hls_write_file_entry(AVIOContext *out, int insert_discont,
         avio_printf(out, "#EXT-X-PROGRAM-DATE-TIME:%s.%03d%s\n", buf0, milli, buf1);
         *prog_date_time += duration;
     }
+    if (prefetch)
+        avio_printf(out, "#EXT-X-PREFETCH:");
     if (baseurl)
         avio_printf(out, "%s", baseurl);
     avio_printf(out, "%s\n", filename);

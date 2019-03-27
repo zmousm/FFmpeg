@@ -1048,6 +1048,12 @@ Set timeout for socket I/O operations. Applicable only for HTTP output.
 @item -ignore_io_errors
 Ignore IO errors during open, write and delete. Useful for long-duration runs with network output.
 
+@item -lhls @var{lhls}
+Enable low-latency HLS (LHLS). Adds #EXT-X-PREFETCH tag with current segment's URI.
+Apple does not have an official spec for LHLS. Meanwhile hls.js player folks are
+trying to standardize an open LHLS spec. The draft spec is available in https://github.com/video-dev/hlsjs-rfcs/blob/lhls-spec/proposals/0001-lhls.md
+This is an experimental feature.
+
 @end table
 
 @anchor{ico}
