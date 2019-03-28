@@ -500,7 +500,7 @@ static void output_segment_list(OutputStream *os, AVIOContext *out, AVFormatCont
                                     (double) seg->duration / timescale, 0,
                                     seg->range_length, seg->start_pos, NULL,
                                     c->single_file ? os->initfile : seg->file,
-                                    NULL, 0);
+                                    NULL);
             if (ret < 0) {
                 av_log(os->ctx, AV_LOG_WARNING, "ff_hls_write_file_entry get error\n");
             }

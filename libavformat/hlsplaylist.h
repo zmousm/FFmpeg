@@ -52,8 +52,10 @@ int ff_hls_write_file_entry(AVIOContext *out, int insert_discont,
                              double duration, int round_duration,
                              int64_t size, int64_t pos, //Used only if HLS_SINGLE_FILE flag is set
                              char *baseurl, //Ignored if NULL
-                             char *filename, double *prog_date_time,
-                             int prefetch);
+                             char *filename, double *prog_date_time);
+int ff_hls_write_prefetch(AVIOContext *out, int insert_discont,
+                          char *baseurl, //Ignored if NULL
+                          char *filename);
 void ff_hls_write_end_list (AVIOContext *out);
 
 #endif /* AVFORMAT_HLSPLAYLIST_H_ */
